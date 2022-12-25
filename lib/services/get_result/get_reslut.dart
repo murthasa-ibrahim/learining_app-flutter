@@ -2,27 +2,26 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:dio/dio.dart';
-import 'package:learning_app/screens/dashbord/model/dashbord_model.dart';
+import 'package:learning_app/screens/result/model/get_reslut.dart';
 import 'package:learning_app/services/api_urls/api_urls.dart';
 import 'package:learning_app/utils/utils.dart';
 
-class DashbordService {
-  Future<DashbordModel> getDashbord() async {
-    const url = ApiUrls.baseUrl + ApiUrls.getDashbord;
+class GetResultService {
+  Future<GetResultModel> getResultApi(int id) async {
+    const url = ApiUrls.baseUrl + ApiUrls.getResult;
     final token = await Utils.storage.read(key: 'token');
-    log(token.toString());
+    // final token = Utils.getToken();
     try {
       final dio = Dio();
       dio.options.headers["Authorization"] = "Bearer $token";
       dio.options.headers["Content-Type"] = "application/json";
 
       final response =
-          await dio.post(url, data: {"category": "General", "type": "General"});
-
+          await dio.post(url, data: {"category": "IELTS", "test_id":id});
 
       if (response.statusCode! >= 200 || response.statusCode! <= 299) {
         log(response.data.toString());
-        return dashbordModelFromJson(jsonEncode(response.data['data']));
+        return getResultModelFromJson(jsonEncode(response.data));
       } else {
         throw 'Something went wrong !';
       }

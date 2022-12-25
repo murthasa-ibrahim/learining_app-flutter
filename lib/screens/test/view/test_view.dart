@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 import 'package:learning_app/const/constant.dart';
 import 'package:learning_app/screens/Excercise/reading/view/excercise_view.dart';
 import 'package:learning_app/screens/dashbord/model/dashbord_model.dart';
+import 'package:learning_app/screens/test/controller/test_controller.dart';
 import 'package:learning_app/screens/test/model/test_model.dart';
 import 'package:learning_app/services/get_tests/get_tests.dart';
 
@@ -11,6 +13,7 @@ class TestView extends StatelessWidget {
 final Subject subject;
   @override
   Widget build(BuildContext context) {
+  
      return Container(
       decoration: const BoxDecoration(
         gradient: LinearGradient(
@@ -39,10 +42,11 @@ final Subject subject;
                 future: GetTestServices().getTests(subject.id),
                 builder: (context, snapshot){
                   if(snapshot.hasData){
+                    
                     return  ListView.builder(
                   padding: const EdgeInsets.all(15),
                   itemCount: snapshot.data?.data.tests.length,
-                  itemBuilder: (context, index) => TestCard(test: snapshot.data!.data.tests[index]),);
+                  itemBuilder: (context, index) => TestCard(test: snapshot.data!.data.tests[index],subjectId: subject.id,index: index,),);
                   
                   }
                   if(snapshot.hasError){
@@ -62,19 +66,19 @@ final Subject subject;
 
 class TestCard extends StatelessWidget {
   const TestCard({
-    Key? key, required this.test,
+    Key? key, required this.test, required this.subjectId, required this.index,
   }) : super(key: key);
 final Test test;
-
+final int subjectId;
+final int index;
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (context) =>  ExerciseView( testId: test.id,),)),
+      onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (context) => ExerciseView(testId: test.id,subjectId: subjectId),)),
       child: Container(
         height: 100,
         margin: const EdgeInsets.only(bottom: 10),
         child: Card(
-        
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
@@ -83,7 +87,7 @@ final Test test;
               kwidth,
               Text(test.name),
              const Spacer(),
-             const Icon(Icons.lock) ,
+             const Icon( Icons.lock) ,
               kwidth
               ],
             ),
@@ -94,7 +98,7 @@ final Test test;
               children: [
                 Text(test.duration),
                Text(test.exercisesCount),
-               const  Text('4 try left'),
+               const  Text('4 try left',),
               ],
             ),
           ],

@@ -7,13 +7,13 @@ import 'package:learning_app/utils/utils.dart';
 
 class LoginController extends GetxController{
   final phoneInput = TextEditingController();
-  final passwordInput = TextEditingController();
+  final usernameInput = TextEditingController();
   final formKey = GlobalKey<FormState>();
   RxBool isLoading = false.obs;
 
 String?  validator(String? str){
-    if(str == null || str.length != 10){
-      return 'enter a valid phone number';
+    if(str == null || str.isEmpty){
+      return 'Feild is required';
     }
     return null;
   }

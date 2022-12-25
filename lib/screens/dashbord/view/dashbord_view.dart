@@ -3,9 +3,12 @@ import 'package:get/get.dart';
 import 'package:learning_app/const/constant.dart';
 import 'package:learning_app/screens/dashbord/controller/dashbord_controller.dart';
 import 'package:learning_app/screens/dashbord/model/dashbord_model.dart';
+import 'package:learning_app/screens/splash/controller/splash_controller.dart';
 import 'package:learning_app/services/api_urls/api_urls.dart';
 import 'package:learning_app/services/get_dashbord/get_dashbord.dart';
+import 'package:learning_app/utils/utils.dart';
 
+import '../../my_account/controller/controller.dart';
 import '../../test/view/test_view.dart';
 
 class DashBordView extends StatelessWidget {
@@ -14,144 +17,153 @@ class DashBordView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    
+    final controller = Get.put(DashBordController());
+    final accountController = Get.put(MyAccountController(),);
     return Container(
       decoration: const BoxDecoration(
           gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.center,
-              colors: [Colors.red, Colors.white])),
+              colors: [Colors.red, Colors.white]),),
       child: Scaffold(
         backgroundColor: Colors.transparent,
         body: SafeArea(
-          child: FutureBuilder<DashbordModel>(
-              future: DashbordService().getDashbord(),
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  return ListView(
-                    physics: const BouncingScrollPhysics(),
-                    children: [
-                      ListTile(
-                        leading:
-                            const Icon(Icons.directions_boat_filled_outlined),
-                        trailing: Container(
-                          height: 47,
-                          width: 150,
-                          decoration: BoxDecoration(
-                            color: kblack,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.all(8),
-                                height: 35,
-                                decoration: BoxDecoration(
-                                  color: kwhight,
-                                  borderRadius: BorderRadius.circular(6),
-                                ),
-                                child: const Center(
-                                  child: Text(
-                                    'General',
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.bold),
+          child: GetBuilder<SplahController>(
+            builder: (spcontroller) => 
+             Utils.hasInternet ? FutureBuilder<DashbordModel>(
+                future: DashbordService().getDashbord(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return ListView(
+                      physics: const BouncingScrollPhysics(),
+                      children: [
+                        ListTile(
+                          leading:
+                              IconButton(onPressed: (){
+                                accountController.logout();
+                              }, icon: const Icon(Icons.directions_boat_filled_outlined)),
+                          trailing: Container(
+                            height: 47,
+                            width: 150,
+                            decoration: BoxDecoration(
+                              color: kblack,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(8),
+                                  height: 35,
+                                  decoration: BoxDecoration(
+                                    color: kwhight,
+                                    borderRadius: BorderRadius.circular(6),
+                                  ),
+                                  child: const Center(
+                                    child: Text(
+                                      'General',
+                                      style:
+                                          TextStyle(fontWeight: FontWeight.bold),
+                                    ),
                                   ),
                                 ),
+                                const Text(
+                                  'Education',
+                                  style: TextStyle(
+                                      color: kwhight,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Welcome,',
+                                  style: Theme.of(context).textTheme.headline6),
+                              ksmallHeight,
+                              Obx(() => 
+                                 Text(
+                                  '${controller.userName}!',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .headline6!
+                                      .copyWith(fontWeight: FontWeight.bold),
+                                ),
                               ),
-                              const Text(
-                                'Education',
-                                style: TextStyle(
-                                    color: kwhight,
-                                    fontWeight: FontWeight.bold),
+                              const SizedBox(
+                                height: 40,
                               ),
+                              Text(
+                                'Subjects',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .headline6!
+                                    .copyWith(fontWeight: FontWeight.bold),
+                              )
                             ],
                           ),
                         ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('Welcome,',
-                                style: Theme.of(context).textTheme.headline6),
-                            ksmallHeight,
-                            Text(
-                              'ALTHAF VAHAB!',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .headline6!
-                                  .copyWith(fontWeight: FontWeight.bold),
-                            ),
-                            const SizedBox(
-                              height: 40,
-                            ),
-                            Text(
-                              'Subjects',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .headline6!
-                                  .copyWith(fontWeight: FontWeight.bold),
-                            )
-                          ],
+                        SizedBox(
+                          height: size.height * .17,
+                          child: ListView.builder(
+                            itemCount: snapshot.data?.subjects.length,
+                            shrinkWrap: true,
+                            padding: const EdgeInsets.only(left: 16),
+                            scrollDirection: Axis.horizontal,
+                            itemBuilder: (context, index) {
+                              return SubjectsCard(size: size,subject: snapshot.data!.subjects[index],index: index,);
+                            },
+                          ),
                         ),
-                      ),
-                      SizedBox(
-                        height: size.height * .17,
-                        child: ListView.builder(
-                          itemCount: snapshot.data?.subjects.length,
+                        ListTile(
+                          leading: Text('Lessons',
+                              style: Theme.of(context).textTheme.headline6),
+                          trailing: const Text('See all'),
+                        ),
+                        SizedBox(
+                          height: size.height * .17,
+                          child: ListView.builder(
+                            itemCount: snapshot.data?.lessons.length,
+                            shrinkWrap: true,
+                            padding: const EdgeInsets.only(left: 16),
+                            scrollDirection: Axis.horizontal,
+                            itemBuilder: (context, index) {
+                              return LessonsCard(size: size,lesson: snapshot.data!.lessons[index],);
+                            },
+                          ),
+                        ),
+                        kheight,
+                        ListTile(
+                          leading: Text('Latest News',
+                              style: Theme.of(context).textTheme.headline6),
+                          trailing: const Text('See all'),
+                        ),
+                        ListView.builder(
                           shrinkWrap: true,
-                          padding: const EdgeInsets.only(left: 16),
-                          scrollDirection: Axis.horizontal,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: snapshot.data?.latestNews.length,
                           itemBuilder: (context, index) {
-                            return SubjectsCard(size: size,subject: snapshot.data!.subjects[index],);
+                            return NewsCard(size: size,latestNew: snapshot.data!.latestNews[index],);
                           },
                         ),
-                      ),
-                      ListTile(
-                        leading: Text('Lessons',
-                            style: Theme.of(context).textTheme.headline6),
-                        trailing: const Text('See all'),
-                      ),
-                      SizedBox(
-                        height: size.height * .17,
-                        child: ListView.builder(
-                          itemCount: snapshot.data?.lessons.length,
-                          shrinkWrap: true,
-                          padding: const EdgeInsets.only(left: 16),
-                          scrollDirection: Axis.horizontal,
-                          itemBuilder: (context, index) {
-                            return LessonsCard(size: size,lesson: snapshot.data!.lessons[index],);
-                          },
-                        ),
-                      ),
-                      kheight,
-                      ListTile(
-                        leading: Text('Latest News',
-                            style: Theme.of(context).textTheme.headline6),
-                        trailing: const Text('See all'),
-                      ),
-                      ListView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: snapshot.data?.latestNews.length,
-                        itemBuilder: (context, index) {
-                          return NewsCard(size: size,latestNew: snapshot.data!.latestNews[index],);
-                        },
-                      ),
-                    ],
+                      ],
+                    );
+                  }
+                  if (snapshot.hasError) {
+                    return Center(
+                      child: Text(snapshot.error.toString()),
+                    );
+                  }
+                  return const Center(
+                    child: CircularProgressIndicator(),
                   );
-                }
-                if (snapshot.hasError) {
-                  return Center(
-                    child: Text(snapshot.error.toString()),
-                  );
-                }
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
-              }),
+                })
+                : const Center(child: Text('No internet !\ncheck your network',textAlign: TextAlign.center,style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),),),
+          )
         ),
       ),
     );
@@ -161,11 +173,12 @@ class DashBordView extends StatelessWidget {
 class SubjectsCard extends StatelessWidget {
   const SubjectsCard({
     Key? key,
-    required this.size, required this.subject,
+    required this.size, required this.subject, required this.index,
   }) : super(key: key);
 
   final Size size;
   final Subject subject;
+  final int index;
   @override
   Widget build(BuildContext context) {
     return InkWell(
@@ -174,7 +187,7 @@ class SubjectsCard extends StatelessWidget {
         width: size.width * .45,
         margin: const EdgeInsets.only(right: 10),
         decoration: BoxDecoration(
-          color: Colors.teal,
+          color:colors[index],
           borderRadius: BorderRadius.circular(16),
         ),
         child: Padding(
@@ -198,9 +211,9 @@ class SubjectsCard extends StatelessWidget {
                 ],
               ),
               const Spacer(),
-              const Text(
-                '60%',
-                style: TextStyle(color: kwhight),
+               Text(
+                '${Get.find<DashBordController>().getPercentage(int.parse(subject.userTestsCount), subject.testsCount)}%',
+                style: const TextStyle(color: kwhight),
               ),
               const SizedBox(
                 height: 6,
@@ -209,7 +222,7 @@ class SubjectsCard extends StatelessWidget {
                 backgroundColor: kwhight,
                 value: int.parse(subject.userTestsCount) / subject.testsCount,
                 minHeight: 6,
-                valueColor: AlwaysStoppedAnimation(Colors.amber),
+                valueColor:  const AlwaysStoppedAnimation(Colors.amber),
               )
             ],
           ),
@@ -247,7 +260,7 @@ class LessonsCard extends StatelessWidget {
                   color: Colors.pinkAccent,
                   borderRadius: BorderRadius.circular(6),
                 ),
-                child:  Icon(Icons.ad_units),
+                child:  const Icon(Icons.ad_units),
               ),
               const Spacer(),
                Text(lesson.title)

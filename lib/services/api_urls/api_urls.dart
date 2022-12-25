@@ -7,4 +7,6 @@ class ApiUrls {
   static const getDashbord = "api/dashboard"; 
   static const tests = "api/tests";
   static const exercises = "api/exercises";
+  static const submitResult = "api/save_result";
+  static const getResult = "api/get_result";
 }

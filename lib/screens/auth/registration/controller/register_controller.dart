@@ -6,14 +6,15 @@ import '../../../../utils/utils.dart';
 import '../../../dashbord/view/dashbord_view.dart';
 
 class RegisterController extends GetxController {
+  final nameInput = TextEditingController();
   final phoneInput = TextEditingController();
-  final passwordInput = TextEditingController();
+  final emailInput = TextEditingController();
   final formKey = GlobalKey<FormState>();
   RxBool isLoading = false.obs;
 
   String? validator(String? str) {
-    if (str == null || str.length != 10) {
-      return 'enter a valid phone number';
+    if (str == null || str.isEmpty) {
+      return 'feild is required';
     }
     return null;
   }
@@ -28,6 +29,7 @@ class RegisterController extends GetxController {
         (value) {
           if (value.success == true) {
           Utils.storeToken(value.data?.token??'');
+          Utils.storage.write(key: 'username', value: nameInput.text);
             Navigator.of(context).pushReplacement(
               MaterialPageRoute(
                 builder: (context) => const DashBordView(),

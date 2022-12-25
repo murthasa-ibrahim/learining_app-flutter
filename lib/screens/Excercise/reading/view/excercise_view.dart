@@ -1,5 +1,3 @@
-
-
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 
@@ -11,28 +9,31 @@ import 'package:learning_app/services/excercise_service/get_excercise.dart';
 class ExerciseView extends StatelessWidget {
   const ExerciseView({
     Key? key,
-    required this.testId,
+    required this.testId, required this.subjectId,
   }) : super(key: key);
   final int testId;
+  final int subjectId;
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: const BoxDecoration(
-          gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.center,
-              colors: [Colors.red, kwhight])),
+        gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.center,
+            colors: [Colors.red, kwhight]),
+      ),
       child: Scaffold(
         backgroundColor: Colors.transparent,
         body: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.only(left: 16, right: 16, top: 16),
             child: FutureBuilder<ExcercisesModel>(
               future: ExcerciseServices().getExcercise(testId),
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
+                  final data = snapshot.data!.data;
                   return ExcerciseCard(
-                    exercise: snapshot.data!.data.exercises[1],
+                    exercise: data.exercises.last,subjectId: subjectId,testId:testId,
                   );
                 }
                 if (snapshot.hasError) {
@@ -55,67 +56,77 @@ class ExerciseView extends StatelessWidget {
 class ExcerciseCard extends StatelessWidget {
   const ExcerciseCard({
     Key? key,
-    required this.exercise,
+    required this.exercise, required this.subjectId, required this.testId,
   }) : super(key: key);
   final Exercise exercise;
+  final int subjectId;
+  final int testId;
   @override
   Widget build(BuildContext context) {
-    return Column(
-      // crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            IconButton(
-              onPressed: () => Navigator.of(context).pop(),
-              icon: const Icon(Icons.arrow_back_ios),
-              iconSize: 20,
-            ),
-            const Text("25.00"),
-            const Text(
-              "Quit Exam",
+    return GestureDetector(
+      onHorizontalDragEnd: (details) => Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) =>
+              SubQuestionView(excercise: exercise,subjectId:subjectId,testId: testId, ),
+        ),
+      ),
+      child: ListView(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              IconButton(
+                onPressed: () => Navigator.of(context).pop(),
+                icon: const Icon(Icons.arrow_back_ios),
+                iconSize: 20,
+              ),
+              const Text("25.00"),
+              const Text(
+                "Quit Exam",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
+          const Padding(
+            padding: EdgeInsets.all(10.0),
+            child: Text(
+              'REad the passage and Answer more than five para and the com',
+              maxLines: 2,
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
-          ],
-        ),
-        Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: Text(
-            exercise.question,
-            maxLines: 2,
-            style: const TextStyle(fontWeight: FontWeight.bold),
           ),
-        ),
-        Expanded(
-          child: Card(
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          Card(
+          
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),),
             child: Padding(
               padding: const EdgeInsets.all(12.0),
               child: ListView(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
                 children: [
                   ksmallHeight,
                   Html(
                     data: exercise.question,
                   ),
-                  kheight,
-                  kheight,
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => SubQuestionView(
-                            subQuestion: exercise.subQuestions[1]),
-                      ));
-                    },
-                    child: const Text('Go to question'),
-                  )
+                  // kheight,
+                  // kheight,
+                  // ElevatedButton(
+                  //   onPressed: () {
+                  //     Navigator.of(context).push(MaterialPageRoute(
+                  //       builder: (context) => SubQuestionView(
+                  //           subQuestion: exercise.subQuestions[1]),
+                  //     ));
+                  //   },
+                  //   child: const Text('Go to question'),
+                  // )
                 ],
               ),
             ),
           ),
-        ),
-        ksmallHeight
-      ],
+          ksmallHeight
+        ],
+      ),
     );
   }
 }

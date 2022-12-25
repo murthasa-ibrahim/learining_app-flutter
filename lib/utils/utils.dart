@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class Utils {
+
+ static bool hasInternet = false;
  static void showSnackBar(BuildContext context, String mesg, Color color) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -20,4 +22,6 @@ class Utils {
  static Future<String?> getToken()async{
    return await storage.read(key: 'token',);
  }
+   
+
 }

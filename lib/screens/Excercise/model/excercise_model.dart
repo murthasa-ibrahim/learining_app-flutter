@@ -6,9 +6,9 @@ ExcercisesModel excercisesModelFromJson(String str) => ExcercisesModel.fromJson(
 
 class ExcercisesModel {
     ExcercisesModel({
-        required this.success,
-        required this.data,
-        required this.message,
+      required this.success,
+      required this.data,
+      required this.message,
     });
 
     final bool success;
@@ -25,8 +25,8 @@ class ExcercisesModel {
 
 class Data {
     Data({
-        required this.test,
-        required this.exercises,
+      required this.test,
+      required this.exercises,
     });
 
     final Test test;
@@ -40,25 +40,25 @@ class Data {
 
 class Exercise {
     Exercise({
-        required this.id,
-        required this.institutionId,
-        required this.type,
-        required this.testId,
-        required this.question,
-        required this.image,
-        required this.audio,
-        required this.answerKey,
-        required this.defaultAccess,
-        required this.createdAt,
-        required this.updatedAt,
-        required this.status,
-        required this.userExercisesCount,
-        required this.subQuestions,
+      required this.id,
+      required this.institutionId,
+      required this.type,
+      required this.testId,
+      required this.question,
+      required this.image,
+      required this.audio,
+      required this.answerKey,
+      required this.defaultAccess,
+      required this.createdAt,
+      required this.updatedAt,
+      required this.status,
+      required this.userExercisesCount,
+      required this.subQuestions,
     });
 
     final int id;
     final String institutionId;
-    final String type;
+    final String? type;
     final String testId;
     final String question;
     final dynamic image;
@@ -92,32 +92,32 @@ class Exercise {
 
 class SubQuestion {
     SubQuestion({
-        required this.id,
-        required this.exerciseId,
-        required this.question,
-        required this.image,
-        required this.audio,
-        required this.typeId,
-        required this.noOfOptions,
-        required this.answer,
-        required this.audioAnswer,
-        required this.explanation,
-        required this.type,
-        required this.options,
+      required this.id,
+      required this.exerciseId,
+      required this.question,
+      required this.image,
+      required this.audio,
+      required this.typeId,
+      required this.noOfOptions,
+      required this.answer,
+      required this.audioAnswer,
+      required this.explanation,
+      required this.type,
+      required this.options,
     });
 
     final int id;
-    final String exerciseId;
+    final String? exerciseId;
     final String question;
     final dynamic image;
     final dynamic audio;
     final String typeId;
-    final String noOfOptions;
-    final String answer;
+    final String? noOfOptions;
+    final String? answer;
     final dynamic audioAnswer;
     final dynamic explanation;
     final Type type;
-    final List<dynamic> options;
+    final List<dynamic>? options;
 
     factory SubQuestion.fromJson(Map<String, dynamic> json) => SubQuestion(
         id: json["id"],
@@ -135,10 +135,12 @@ class SubQuestion {
     );
 }
 
+
+
 class Type {
     Type({
-        required this.id,
-        required this.name,
+      required this.id,
+      required this.name,
     });
 
     final int id;
@@ -155,9 +157,9 @@ class Type {
 
 class Test {
     Test({
-        required this.id,
-        required this.name,
-        required this.duration,
+      required this.id,
+      required this.name,
+      required this.duration,
     });
 
     final int id;
@@ -175,3 +177,43 @@ class Test {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+List<Options> optionsFromJson(String str) => List<Options>.from(json.decode(str).map((x) => Options.fromJson(x)));
+
+String optionsToJson(List<Options> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
+
+class Options {
+    Options({
+        required this.questionId,
+        required this.option,
+        required this.audio,
+    });
+
+    final int questionId;
+    final String option;
+    final dynamic audio;
+
+    factory Options.fromJson(Map<String, dynamic> json) => Options(
+        questionId: json["question_id"],
+        option: json["option"],
+        audio: json["audio"],
+    );
+
+    Map<String, dynamic> toJson() => {
+        "question_id": questionId,
+        "option": option,
+        "audio": audio,
+    };
+}
